@@ -242,8 +242,13 @@ button:hover {
 .campus-wrapper {
     width: 100%;
     display: flex;
+<<<<<<< HEAD
     flex-direction: column;
     justify-content: center;
+=======
+    /* justify-content: center; */
+    justify-content: flex-start;
+>>>>>>> c9633d9 (Arreglo un poco la pagina del campus)
     align-items: center;
 }
 
@@ -269,17 +274,25 @@ button:hover {
     font-size: 2rem;
     margin-bottom: 15px;
     color: #ff9a5c;
+<<<<<<< HEAD
     display: flex;
     flex-direction: column;
     justify-content: center;
+=======
+    align-items: center;
+>>>>>>> c9633d9 (Arreglo un poco la pagina del campus)
 }
 
 .campus-card p {
     margin-bottom: 30px;
     color: #ccc;
+<<<<<<< HEAD
     display: flex;
     flex-direction: column;
     justify-content: center;
+=======
+    align-items: center;
+>>>>>>> c9633d9 (Arreglo un poco la pagina del campus)
 }
 
 /* =======================

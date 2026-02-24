@@ -42,7 +42,7 @@ def index():
         cur = conn.cursor()
 
         cur.execute(
-            "SELECT id_user, password, user_mail FROM users WHERE user_name=%s",
+            "SELECT id_user, password, user_email FROM users WHERE user_name=%s",
             (username,)
         )
 
