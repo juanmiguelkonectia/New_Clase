@@ -3,7 +3,9 @@ import psycopg2
 import os
 from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv
+from functools import wraps
 
+# Cargar variables de entorno desde archivo .env
 load_dotenv()
 
 app = Flask(__name__)
@@ -72,6 +74,11 @@ def register():
         username = request.form["username"]
         email = request.form["email"]
         password = generate_password_hash(request.form["password"])
+        creado_en = "NOW()"
+        actualizado_en = "NOW()"
+        rol_defecto = "Alumno"
+
+
 
         conn = get_db_connection()
         cur = conn.cursor()
@@ -79,8 +86,8 @@ def register():
         try:
 
             cur.execute(
-                "INSERT INTO users (user_name, password, user_mail) VALUES (%s,%s,%s)",
-                (username, password, email)
+                "INSERT INTO users (user_name, password, user_mail, creado_en, actualizado_en, rol) VALUES (%s,%s,%s,%s,%s,%s)",
+                (username, password, email, creado_en, actualizado_en, rol_defecto)
             )
 
             conn.commit()
