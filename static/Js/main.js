@@ -50,3 +50,5 @@ function cargarClima() {
 
 // Arrancamos la función al entrar en la web
 window.onload = cargarClima;
+
+//hago un cambio
