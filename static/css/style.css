@@ -27,7 +27,7 @@ body {
     flex-direction: column; /* Apila los elementos uno bajo otro */
     justify-content: flex-start; /* Los pega arriba para que tú los bajes */
     align-items: center;
-    padding-top: 100px; /* Este espacio separa tu título del techo */
+    padding-top: 0; /* El header ahora ocupa espacio naturalmente */
     background: radial-gradient(circle at top, #222836, #0b0e14);
     font-family: 'Segoe UI', sans-serif;
 }
@@ -215,10 +215,10 @@ button:hover {
 ======================= */
 
 .main-header {
-    position: absolute;
-    top: 25px;
-    left: 50%;
-    transform: translateX(-50%);
+    position: relative;
+    width: 100%;
+    text-align: center;
+    padding: 25px 0;
     z-index: 10;
 }
 
@@ -230,6 +230,7 @@ button:hover {
     letter-spacing: 2px;
     background: linear-gradient(90deg,#ffb347,#ff7a2f,#ff4f00);
     -webkit-background-clip: text;
+    background-clip: text;
     color: transparent;
     text-shadow:
         0 0 12px rgba(255,122,47,.7),
@@ -242,13 +243,8 @@ button:hover {
 .campus-wrapper {
     width: 100%;
     display: flex;
-<<<<<<< HEAD
     flex-direction: column;
     justify-content: center;
-=======
-    /* justify-content: center; */
-    justify-content: flex-start;
->>>>>>> c9633d9 (Arreglo un poco la pagina del campus)
     align-items: center;
 }
 
@@ -274,25 +270,17 @@ button:hover {
     font-size: 2rem;
     margin-bottom: 15px;
     color: #ff9a5c;
-<<<<<<< HEAD
     display: flex;
     flex-direction: column;
     justify-content: center;
-=======
-    align-items: center;
->>>>>>> c9633d9 (Arreglo un poco la pagina del campus)
 }
 
 .campus-card p {
     margin-bottom: 30px;
     color: #ccc;
-<<<<<<< HEAD
     display: flex;
     flex-direction: column;
     justify-content: center;
-=======
-    align-items: center;
->>>>>>> c9633d9 (Arreglo un poco la pagina del campus)
 }
 
 /* =======================
@@ -314,6 +302,30 @@ button:hover {
     opacity: 0; /* Empieza invisible */
     transition: opacity 1.5s ease-in-out; /* Aparece suavemente en 1.5 segundos */
     /* ... el resto de tu código que ya tenías ... */
+}
+
+/* =======================
+   LOGOUT BUTTON
+======================= */
+
+.logout-btn {
+    display: inline-block;
+    margin-top: 20px;
+    background: linear-gradient(135deg,#ff8c42,#ff5f1f);
+    border: none;
+    padding: 12px 30px;
+    border-radius: 30px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: .3s ease;
+    box-shadow: 0 0 15px rgba(255,122,47,.6);
+    text-decoration: none;
+}
+
+.logout-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 25px rgba(255,122,47,.9);
 }
 
 /* Box Model: Usamos padding para dar aire al texto y margin para separarlo de otros elementos.
