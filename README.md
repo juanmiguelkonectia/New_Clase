@@ -46,26 +46,35 @@ El código sigue una estructura modular para facilitar su mantenimiento:
 │   ├── css/            # style.css (global) y calendar.css (estilos neón).
 │   └── js/             # calendar.js (lógica agenda) y mod_usuarios.js (admin).
 └── templates/          # Plantillas Jinja2 para renderizado dinámico.
+```
 
-
-🛠️ Configuración e Instalación Local
+## 🛠️ Configuración e Instalación Local
 Para ejecutar este proyecto en tu entorno local, sigue estos pasos:
 
 1. Clonar el repositorio:
 
+```
 git clone [https://github.com/juanmiguelkonectia/New_Clase.git](https://github.com/juanmiguelkonectia/New_Clase.git)
 cd New_Clase
+```
 
-2.Preparar el entorno virtual:
 
+2. Preparar el entorno virtual:
+
+```
 python -m venv venv
 source venv/bin/activate  # Windows: venv\Scripts\activate
+```
 
-3.Instalar dependencias:
+3. Instalar dependencias:
 
+```
 pip install -r requirements.txt
+```
 
-4.Base de Datos (PostgreSQL):
+4. Base de Datos (PostgreSQL):
+
+```
 Ejecuta el siguiente esquema para crear la tabla de eventos compatible con el sistema:
 
 CREATE TABLE public.events (
@@ -77,23 +86,29 @@ CREATE TABLE public.events (
     end_date timestamptz NOT NULL,
     creado_en timestamptz DEFAULT NOW()
 );
+```
 
-5.Variables de Entorno:
+5. Variables de Entorno:
+
+```
 Crea un archivo .env con las siguientes claves:
 
 DATABASE_URL: Enlace de conexión a tu DB.
 OPENWEATHER_API_KEY: Tu clave de API de OpenWeather.
 SECRET_KEY: Una cadena aleatoria para proteger las sesiones.
+```
 
-6.Iniciar servidor:
+6. Iniciar servidor:
 
+```
 python app.py
+```
 
 
-📡 Información de Despliegue
+## 📡 Información de Despliegue
 Este repositorio está optimizado para Railway. Cada vez que realices un git push a la rama principal, el sistema se actualizará automáticamente, gestionando las variables de entorno y la base de datos de forma nativa.
 
-📝 Notas del Desarrollador
+## 📝 Notas del Desarrollador
 Edición de Eventos: Al hacer clic en un evento del calendario, se abrirá un menú de SweetAlert2 que permite modificar el título o borrar el registro directamente sin escribir comandos.
 
 Registro Admin: Cuando el administrador crea un usuario desde el panel, el sistema genera automáticamente un evento de "Bienvenido al campus" en la agenda del nuevo usuario.
