@@ -124,16 +124,26 @@ def crear_usuario():
     try:
         hashed_password = generate_password_hash(password)
 
+        # 1. Insertar el usuario y obtener su ID
         cur.execute("""
             INSERT INTO users (user_name, password, user_mail, creado_en, actualizado_en, rol) 
             VALUES (%s, %s, %s, NOW(), NOW(), %s)
+            RETURNING id_user
         """, (username, hashed_password, email, rol))
+        
+        id_usuario_nuevo = cur.fetchone()[0]
+
+        # 2. Crear evento de bienvenida (duración de 1 hora)
+        cur.execute("""
+            INSERT INTO events (user_id, title, description, start_date, end_date, creado_en, actualizado_en)
+            VALUES (%s, %s, %s, NOW(), NOW() + INTERVAL '1 hour', NOW(), NOW())
+        """, (id_usuario_nuevo, "Bienvenido al campus", "Evento generado automáticamente",))
 
         conn.commit()
         cur.close()
         conn.close()
 
-        return {"success": True, "message": "Usuario creado correctamente"}
+        return {"success": True, "message": "Usuario y evento creados correctamente"}
 
     except psycopg2.errors.UniqueViolation:
         conn.rollback()
@@ -142,9 +152,10 @@ def crear_usuario():
         return {"success": False, "message": "El usuario o email ya existe"}
 
     except Exception as e:
-        conn.rollback()
-        cur.close()
-        conn.close()
+        if conn:
+            conn.rollback()
+            cur.close()
+            conn.close()
         print(f"Error al crear usuario: {e}")
         return {"success": False, "message": "Error al crear el usuario"}
 
