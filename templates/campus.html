@@ -1,22 +1,37 @@
 {% extends "base.html" %}
 
-{% block content %}
-
-<div class="campus-wrapper">
-
+{% block pre_container %}
+<div class="campus-layout">
     <div class="campus-card">
-
-        <h2>Bienvenido, {{ session.get('user_name') }}</h2>
-
-        <p><strong>Email:</strong> {{ session.get('user_mail') }}</p>
-
+        <h2>Mi ficha</h2>
+        <form id="profile-form" method="POST" action="{{ url_for('auth.campus') }}">
+            <div class="input-box">
+                <input type="text" name="username" value="{{ session.get('user_name') }}" required>
+                <span>Nombre</span>
+            </div>
+            <div class="input-box">
+                <input type="email" name="email" value="{{ session.get('user_mail') }}" required>
+                <span>Email</span>
+            </div>
+            <div class="input-box">
+                <input type="password" name="password" placeholder="Nueva contraseña (opcional)">
+                <span>Contraseña</span>
+            </div>
+            <button type="submit">Actualizar perfil</button>
+        </form>
         <a href="{{ url_for('auth.logout') }}" class="logout-btn">Cerrar sesión</a>
-
     </div>
- </div>
-    
 
+    <div class="calendar-container">
+        <div id="calendar"></div>
+    </div>
+</div>
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/calendar.css') }}" />
+<script src="{{ url_for('static', filename='js/calendar.js') }}"></script>
+{% endblock %}
 
-
+{% block content %}
 {% endblock %}
