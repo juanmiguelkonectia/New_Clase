@@ -32,7 +32,44 @@
             </div>
 
             <!-- SECCIÓN DE CREAR USUARIO -->
-            <div class="create-section">
+            <!-- SECCIÓN DE EDITAR USUARIO (inicialmente oculta) -->
+    <div class="edit-section" style="display:none;">
+        <h3>✏️ Editar Usuario</h3>
+        <form id="edit-form" class="edit-form">
+            <input type="hidden" id="edit-id">
+
+            <div class="form-group">
+                <label for="edit-username">Nombre de Usuario:</label>
+                <input type="text" id="edit-username" name="username" required>
+            </div>
+
+            <div class="form-group">
+                <label for="edit-email">Correo Electrónico:</label>
+                <input type="email" id="edit-email" name="email" required>
+            </div>
+
+            <div class="form-group">
+                <label for="edit-password">Contraseña (dejar en blanco para no cambiar):</label>
+                <input type="password" id="edit-password" name="password">
+            </div>
+
+            <div class="form-group">
+                <label for="edit-rol">Rol:</label>
+                <select id="edit-rol" name="rol" required>
+                    <option value="">-- Selecciona un rol --</option>
+                    <option value="Profesor">Profesor</option>
+                    <option value="Alumno">Alumno</option>
+                    <option value="Oficina">Oficina</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn-update">💾 Guardar Cambios</button>
+            <button type="button" id="cancel-edit" class="btn-cancel">✖️ Cancelar</button>
+        </form>
+        <div id="edit-message" class="message"></div>
+    </div>
+
+    <div class="create-section">
                 <h3>Crear Nuevo Usuario</h3>
                 <form id="create-form" method="POST" class="create-form">
                     <div class="form-group">
@@ -204,15 +241,34 @@
     }
 
     /* SECCIÓN DE CREAR USUARIO */
-    .create-section {
+    .edit-section, .create-section {
         padding-top: 30px;
         border-top: 2px solid rgba(255, 122, 47, 0.4);
     }
 
-    .create-section h3 {
+    .edit-section h3, .create-section h3 {
         font-size: 1.2rem;
         margin-bottom: 20px;
         color: #ff9a5c;
+    }
+
+    .btn-update, .btn-cancel {
+        background: linear-gradient(135deg, #ff8c42, #ff5f1f);
+        border: none;
+        padding: 15px 30px;
+        border-radius: 10px;
+        color: white;
+        font-weight: bold;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 0 15px rgba(255, 122, 47, 0.6);
+        margin-right: 10px;
+    }
+
+    .btn-update:hover, .btn-cancel:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0 25px rgba(255, 122, 47, 0.9);
     }
 
     .create-form {
@@ -324,6 +380,9 @@
     </style>
 
     <script>
+    // Mantener resultados para edición
+    let lastResults = [];
+
     // Buscar usuarios
     document.getElementById('search-form').addEventListener('submit', async function(e) {
         e.preventDefault();
@@ -347,24 +406,95 @@
             const data = await response.json();
 
             if (data.usuarios && data.usuarios.length > 0) {
+                lastResults = data.usuarios;
                 let html = '<p style="color: #ff9a5c; margin-bottom: 15px;"><strong>Resultados encontrados: ' + data.usuarios.length + '</strong></p>';
                 data.usuarios.forEach(user => {
                     html += `
-                        <div class="user-item">
+                        <div class="user-item" data-id="${user.id_user}">
                             <p><strong>Usuario:</strong> ${user.user_name}</p>
                             <p><strong>Email:</strong> ${user.user_mail}</p>
                             <p><strong>Rol:</strong> ${user.rol || 'Sin rol'}</p>
                             <p><strong>Creado:</strong> ${user.creado_en}</p>
+                            <button class="btn-edit" data-id="${user.id_user}">✏️ Editar</button>
                         </div>
                     `;
                 });
                 resultsDiv.innerHTML = html;
             } else {
+                lastResults = [];
                 resultsDiv.innerHTML = '<p style="text-align: center; color: #999;">No se encontraron usuarios</p>';
             }
         } catch (error) {
             console.error('Error:', error);
             resultsDiv.innerHTML = '<p style="color: #f44336; text-align: center;">Error al buscar usuarios</p>';
+        }
+    });
+
+    // Delegación de evento para botones de editar en resultados
+    document.getElementById('search-results').addEventListener('click', function(e) {
+        if (e.target.classList.contains('btn-edit')) {
+            const id = e.target.getAttribute('data-id');
+            const user = lastResults.find(u => u.id_user == id);
+            if (!user) return;
+            // rellenar formulario de edición
+            document.getElementById('edit-id').value = user.id_user;
+            document.getElementById('edit-username').value = user.user_name;
+            document.getElementById('edit-email').value = user.user_mail;
+            document.getElementById('edit-rol').value = user.rol;
+            document.getElementById('edit-password').value = '';
+            document.querySelector('.edit-section').style.display = 'block';
+            window.scrollTo(0, document.querySelector('.edit-section').offsetTop - 20);
+        }
+    });
+
+    // Cancelar edición
+    document.getElementById('cancel-edit').addEventListener('click', function() {
+        document.querySelector('.edit-section').style.display = 'none';
+        document.getElementById('edit-form').reset();
+    });
+
+    // Enviar formulario de edición
+    document.getElementById('edit-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const messageDiv = document.getElementById('edit-message');
+        messageDiv.className = '';
+
+        const formData = {
+            id_user: document.getElementById('edit-id').value,
+            username: document.getElementById('edit-username').value,
+            email: document.getElementById('edit-email').value,
+            password: document.getElementById('edit-password').value,
+            rol: document.getElementById('edit-rol').value
+        };
+
+        try {
+            const response = await fetch('{{ url_for("admin.actualizar_usuario") }}', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                messageDiv.textContent = '✅ Usuario actualizado correctamente';
+                messageDiv.className = 'message success';
+                // actualizar resultado en pantalla
+                const idx = lastResults.findIndex(u => u.id_user == formData.id_user);
+                if (idx > -1) {
+                    lastResults[idx].user_name = formData.username;
+                    lastResults[idx].user_mail = formData.email;
+                    lastResults[idx].rol = formData.rol;
+                }
+                document.querySelector('.edit-section').style.display = 'none';
+                document.getElementById('search-form').dispatchEvent(new Event('submit'));
+            } else {
+                messageDiv.textContent = '❌ Error: ' + data.message;
+                messageDiv.className = 'message error';
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            messageDiv.textContent = '❌ Error al actualizar el usuario';
+            messageDiv.className = 'message error';
         }
     });
 

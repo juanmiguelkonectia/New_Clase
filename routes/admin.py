@@ -149,6 +149,62 @@ def crear_usuario():
         return {"success": False, "message": "Error al crear el usuario"}
 
 
+@admin_bp.route("/actualizar-usuario", methods=["POST"])
+@role_required("admin", "administrador")
+def actualizar_usuario():
+    data = request.get_json()
+    id_user = data.get("id_user")
+    username = data.get("username", "").strip()
+    email = data.get("email", "").strip()
+    password = data.get("password", "").strip()
+    rol = data.get("rol", "").strip()
+
+    if not id_user or not all([username, email, rol]):
+        return {"success": False, "message": "Faltan campos obligatorios"}
+
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    try:
+        if password:
+            hashed_password = generate_password_hash(password)
+            cur.execute(
+                """
+                UPDATE users
+                SET user_name=%s, user_mail=%s, password=%s, rol=%s, actualizado_en=NOW()
+                WHERE id_user=%s
+                """,
+                (username, email, hashed_password, rol, id_user),
+            )
+        else:
+            cur.execute(
+                """
+                UPDATE users
+                SET user_name=%s, user_mail=%s, rol=%s, actualizado_en=NOW()
+                WHERE id_user=%s
+                """,
+                (username, email, rol, id_user),
+            )
+
+        conn.commit()
+        cur.close()
+        conn.close()
+        return {"success": True, "message": "Usuario actualizado correctamente"}
+
+    except psycopg2.errors.UniqueViolation:
+        conn.rollback()
+        cur.close()
+        conn.close()
+        return {"success": False, "message": "El nombre de usuario o correo ya está en uso"}
+
+    except Exception as e:
+        conn.rollback()
+        cur.close()
+        conn.close()
+        print(f"Error al actualizar usuario: {e}")
+        return {"success": False, "message": "Error al actualizar el usuario"}
+
+
 @admin_bp.app_context_processor
 def inject_api_key():
     return dict(api_key=os.getenv("OPENWEATHER_API_KEY"))
