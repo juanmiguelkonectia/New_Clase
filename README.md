@@ -155,3 +155,40 @@ Este repositorio está optimizado para Railway. Cada vez que realices un git pus
 Edición de Eventos: Al hacer clic en un evento del calendario, se abrirá un menú de SweetAlert2 que permite modificar el título o borrar el registro directamente sin escribir comandos.
 
 Registro Admin: Cuando el administrador crea un usuario desde el panel, el sistema genera automáticamente un evento de "Bienvenido al campus" en la agenda del nuevo usuario.
+
+## 🧠 Arquitectura y Funcionamiento Técnico
+
+Entender cómo se conectan las piezas de este proyecto es clave para comprender el flujo de datos. La aplicación utiliza un modelo **cliente-servidor**: el navegador (cliente) se encarga de la interfaz, mientras que Python/Flask (servidor) gestiona la lógica y la base de datos.
+
+### 1. Gestión Dinámica del Calendario
+El calendario no es un dibujo estático de HTML, sino una aplicación dinámica generada mediante:
+
+* **Tecnología:** [FullCalendar 6](https://fullcalendar.io/). Esta librería de JavaScript transforma un contenedor vacío `<div id="calendar"></div>` en una interfaz interactiva completa.
+* **Inicialización:** Se utiliza el método `FullCalendar.Calendar`. El archivo `calendar.js` selecciona el elemento del DOM y lo configura con un objeto de JavaScript que define la estética, la capacidad de arrastrar eventos y el origen de los datos.
+* **Comunicación Asíncrona (Fetch API):** Los eventos no están grabados en el código. El calendario utiliza el parámetro `events: '/campus/get_events'`, lo que permite que el navegador pida a Flask los datos de los eventos en segundo plano cada vez que el usuario cambia de mes, sin necesidad de recargar la página completa.
+
+### 2. Automatización: El "Trigger" de Bienvenida
+El evento de "Bienvenida" se genera en el **Backend** en el momento exacto en que se valida un nuevo registro. El flujo lógico es el siguiente:
+
+1.  **Captura de datos:** Al pulsar "Crear Usuario" en el panel de administración, se envía un objeto JSON a la ruta `/crear-usuario` en `admin.py`.
+2.  **El Disparador (Trigger):** Dentro de la función de creación, tras insertar los datos del usuario, se ejecuta la cláusula SQL `RETURNING id_user`. Este es el punto crítico: obtenemos el ID único generado por la base de datos para vincular el calendario al usuario correcto.
+3.  **Inserción Vinculada:** Con el ID en mano, el sistema ejecuta automáticamente un segundo `INSERT` en la tabla `public.events`.
+
+**Detalles técnicos del evento automático:**
+* **Título:** "Bienvenido al campus".
+* **Tiempo:** Se usa la función `NOW()` de PostgreSQL para fijar el inicio en el momento actual.
+* **Duración:** Se define un `INTERVAL '1 hour'` para que el bloque visual sea claramente visible en la agenda.
+
+---
+
+### 📊 Resumen de Responsabilidades
+
+| Capa | Herramienta | Acción Clave |
+| :--- | :--- | :--- |
+| **Visualización** | FullCalendar JS | Renderiza el HTML y detecta interacciones del usuario. |
+| **Persistencia** | PostgreSQL | Almacena y protege los datos en la tabla `public.events`. |
+| **Lógica / Puente** | Flask (Python) | Procesa las peticiones y automatiza la creación de eventos. |
+
+
+
+Este flujo garantiza que, en cuanto el usuario inicie sesión por primera vez, su agenda ya contenga el evento de bienvenida esperándole.
