@@ -75,6 +75,30 @@ pip install -r requirements.txt
 4. Base de Datos (PostgreSQL):
 
 ```
+Ejecuta el siguiente esquema para crear los tipos usuarios:
+
+CREATE TYPE public.rol_usuario AS ENUM (
+    'Admin',
+    'Profesor',
+    'Alumno',
+    'Oficina'
+);
+```
+
+```
+Ejecuta el siguiente esquema para crear la tabla de usuarios:
+CREATE TABLE public.users (
+    id_user integer NOT NULL,
+    user_name character varying(50) NOT NULL,
+    password text NOT NULL,
+    user_mail character varying(100) CONSTRAINT users_user_email_not_null NOT NULL,
+    creado_en timestamp with time zone NOT NULL,
+    actualizado_en timestamp with time zone NOT NULL,
+    rol public.rol_usuario NOT NULL
+);
+```
+
+```
 Ejecuta el siguiente esquema para crear la tabla de eventos compatible con el sistema:
 
 CREATE TABLE public.events (
