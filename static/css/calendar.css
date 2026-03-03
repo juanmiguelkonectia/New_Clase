@@ -13,11 +13,25 @@
 
 
 /* Ajusta el tamaño de la ficha para que no ocupe todo */
-.campus-card {
+.campus-cardcal {
     flex: 1; /* La ficha se queda más estrecha a la izquierda */
     max-width: 350px;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 15px;
+    padding: 15px;
+    margin: 0;
+    text-align: center;
+    border: 1px solid #ff9a5c;
 }
 
+.campus-cardcal h2 {
+    font-size: 2rem;
+    margin-bottom: 15px;
+    color: #ff9a5c;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
 /* Ajusta el calendario */
 .calendar-container {
     flex: 3; /* Esto le da 3 veces más espacio que a la ficha */
@@ -26,6 +40,7 @@
     border-radius: 15px;
     padding: 15px;
     margin: 0;
+    border: 1px solid #ff9a5c;
 }
 
 #calendar {

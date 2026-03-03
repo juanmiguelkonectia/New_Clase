@@ -349,8 +349,6 @@ healthchecksdb
 MigrationBackup/
 
 
-#esquema de base de datos
-INfoDataBase/Schema.sql
 
 #bloqueo el .env
 .env
